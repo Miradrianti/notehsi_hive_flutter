@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "username": "Admin",
+    "title": "💡 New Product Idea Design 1",
+    "content": "Create a mobile app UI Kit that provide a basic notes functionality but with some improvement. \nThere will be a choice to select what kind of notes that user needed, so the experience while taking notes can be unique based on the needs.",
+    "createdTime": "2025-08-18T10:00:00",
+    "tags": "Important, Top Priority, Should Be Done This Week, Important"
+  },
+  {
+    "id": 2,
+    "username": "Admin",
+    "title": "💡 New Product Idea Design 2",
+    "content": "Create a mobile app UI Kit that provide a basic notes functionality but with some improvement. \nThere will be a choice to select what kind of notes that user needed, so the experience while taking notes can be unique based on the needs.",
+    "createdTime": "2025-08-18T10:00:00",
+    "tags": "Important, Top Priority, Should Be Done This Week, Important"
+  },
+  {
+    "id": 3,
+    "username": "Admin",
+    "title": "💡 New Product Idea Design 3",
+    "content": "Create a mobile app UI Kit that provide a basic notes functionality but with some improvement. \nThere will be a choice to select what kind of notes that user needed, so the experience while taking notes can be unique based on the needs.",
+    "createdTime": "2025-08-18T10:00:00",
+    "tags": "Important, Top Priority, Should Be Done This Week, Important"
+  },
+  {
+    "id": 4,
+    "username": "Admin",
+    "title": "💡 New Product Idea Design 4",
+    "content": "Create a mobile app UI Kit that provide a basic notes functionality but with some improvement. \nThere will be a choice to select what kind of notes that user needed, so the experience while taking notes can be unique based on the needs.",
+    "createdTime": "2025-08-18T10:00:00",
+    "tags": "Important, Top Priority, Should Be Done This Week, Important"
+  }
+]
