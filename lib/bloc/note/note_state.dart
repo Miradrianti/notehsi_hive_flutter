@@ -1,14 +1,27 @@
 part of 'note_bloc.dart';
 
-abstract class NoteState {}
+class NoteState {
+  NoteState({
+    this.status = StatusEnum.initial,
+    this.notes = const [],
+    this.error,
+  });
 
-class NoteInitial extends NoteState {}
-class NoteLoading extends NoteState {}
-class NoteLoaded extends NoteState {
+  factory NoteState.initial() => NoteState();
+
+  final StatusEnum status;
   final List<NoteModel> notes;
-  NoteLoaded(this.notes);
-}
-class NoteError extends NoteState {
-  final String message;
-  NoteError(this.message);
+  final Exception? error;
+
+  NoteState copyWith({
+    StatusEnum? status,
+    List<NoteModel>? notes,
+    Exception? error,
+  }) {
+    return NoteState(
+      error: error,
+      notes: notes ?? this.notes,
+      status: status ?? this.status,
+    );
+  }
 }

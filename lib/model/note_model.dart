@@ -1,89 +1,46 @@
-import 'package:ulid/ulid.dart';
-
 class NoteModel {
   final String id;
-  final String username;
   final String title;
   final String content;
-  final DateTime createdTime;
-  final List<String> tags;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   NoteModel({
-    required this.id, 
-    required this.username, 
-    required this.title, 
-    required this.content, 
-    required this.createdTime,
-    this.tags = const [],
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-   NoteModel copyWith({
-    String? id,
-    String? title,
-    String? content,
-    String? username,
-    DateTime? createdTime,
-    List<String>? tags,
-  }) {
+  NoteModel update({String? title, String? content}) {
+    final now = DateTime.now();
     return NoteModel(
-      id: id ?? this.id,
+      id: id,
       title: title ?? this.title,
       content: content ?? this.content,
-      username: username ?? this.username,
-      createdTime: createdTime ?? this.createdTime,
-      tags: tags ?? this.tags,
+      createdAt: createdAt,
+      updatedAt: now,
     );
   }
 
-  NoteModel.addNote({
-    required this.username, 
-    required this.title, 
-    required this.content, 
-    required this.createdTime,
-    this.tags = const [],
-  })
-    : id = Ulid().toString();
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'username': username,
-      'title': title,
-      'content': content,
-      'createdTime': createdTime.toIso8601String(),
-      'tags': tags.join(","),
-    };
-  }
-  factory NoteModel.fromMap(Map<String, dynamic> map) {
+  factory NoteModel.fromJson(Map<String, dynamic> json) {
     return NoteModel(
-      id: map['id'],
-      username: map['username'],
-      title: map['title'],
-      content: map['content'],
-      createdTime: DateTime.parse(map['createdTime']),
-      tags: (map['tags'] as String).isEmpty
-          ? []
-          : (map['tags'] as String).split(","),
-    );
-  }
-
-  factory NoteModel.fromJson(Map<String, dynamic> json) => NoteModel(
       id: json['id'],
-      username: json['username'],
       title: json['title'],
       content: json['content'],
-      createdTime: DateTime.tryParse(json['createdTime'] ?? '') ?? DateTime.now(),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
     );
+  }
 
-  Map<String, dynamic> toJson() => {
-      "id": id,
-      "username": username,
-      "title": title,
-      "content": content,
-      "createdTime": createdTime.toIso8601String(),
-      "tags": tags,
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'content': content,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
-
-  // copy({required String title, required String content, required String createdTime,}) {}
+  }
 }

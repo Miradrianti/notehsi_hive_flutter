@@ -18,10 +18,9 @@ class LoginAuthEvent extends AuthEvent {
   final String email;
   final String password;
 
-  LoginAuthEvent({
-    required this.email,
-    required this.password,
-  });
+  LoginAuthEvent({required this.email, required this.password});
 }
 
-class LogoutRequested extends AuthEvent {}
+class CheckAuthEvent extends AuthEvent {}
+
+class LogoutAuthEvent extends AuthEvent {}

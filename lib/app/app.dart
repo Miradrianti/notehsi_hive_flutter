@@ -1,4 +1,6 @@
 import 'package:aplikasi_catatan/bloc/note/note_bloc.dart';
+import 'package:aplikasi_catatan/service/note/local_service.dart';
+import 'package:aplikasi_catatan/service/user/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,8 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (context) => AuthBloc()),
-        BlocProvider(create: (context) => NoteBloc()),
+        BlocProvider<AuthBloc>(create: (context) => AuthBloc(UserApiServiceImpl())),
+        BlocProvider(create: (context) => NoteBloc(NoteLocalServiceImpl())),
       ],
       child: MaterialApp(
         title: 'HSI Note',

@@ -9,7 +9,6 @@ class MyBottomBar extends StatefulWidget {
   final NoteModel? note;
   final TextEditingController titleController;
   final TextEditingController contentController;
-  final TextEditingController usernameController;
   final VoidCallback? onOpenBottomSheet;
 
   const MyBottomBar({
@@ -18,7 +17,6 @@ class MyBottomBar extends StatefulWidget {
     this.noteId,
     required this.titleController,
     required this.contentController,
-    required this.usernameController,
     this.onOpenBottomSheet,
   });
 
@@ -27,8 +25,7 @@ class MyBottomBar extends StatefulWidget {
 }
 
 class _MyBottomBarState extends State<MyBottomBar> {
-  String lastEdited = "";
-  String user = "";
+  DateTime? updatedAt;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +40,7 @@ class _MyBottomBarState extends State<MyBottomBar> {
               flex: 8,
               child: Text(
                 widget.note != null
-                    ? 'Last Edited: ${widget.note!.createdTime}, by ${widget.note!.username}'
+                    ? 'Last Edited: ${updatedAt?.hour}:${updatedAt?.minute}'
                     : 'Last Edited: - ',
                 textAlign: TextAlign.left,
               ),
@@ -96,14 +93,27 @@ class _MyBottomBarState extends State<MyBottomBar> {
                                   child: TextButton(
                                     onPressed: () async {
                                       if (widget.note != null) {
-                                        final updatedNote = widget.note!.copyWith(
+                                        final updatedNote = widget.note!.update(
                                           title: widget.titleController.text,
                                           content: widget.contentController.text,
-                                          username: widget.usernameController.text,
                                         );
-                                        await NoteLocalService.updateNote(updatedNote);
+
+                                        await NoteLocalServiceImpl().update(
+                                          id: updatedNote.id,
+                                          title: updatedNote.title,
+                                          content: updatedNote.content,
+                                        );
     
-                                        context.read<NoteBloc>().add(UpdateNote(updatedNote));
+                                        context.read<NoteBloc>().add(UpdateNoteEvent(
+                                          id: updatedNote.id,
+                                          title: updatedNote.title,
+                                          content: updatedNote.content,
+                                        ));
+                                      } else {
+                                        context.read<NoteBloc>().add(CreateNoteEvent(
+                                          title: widget.note!.title, 
+                                          content: widget.note!.content,
+                                        ));
                                       }
                                       if (mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +148,7 @@ class _MyBottomBarState extends State<MyBottomBar> {
                                   child: TextButton(
                                     onPressed: () async {
                                       if (widget.noteId != null) {
-                                        context.read<NoteBloc>().add(DeleteNote(widget.noteId!));
+                                        context.read<NoteBloc>().add(DeleteNoteEvent(widget.noteId!));
                                       }
                                       if (mounted) {
                                         Navigator.pop(

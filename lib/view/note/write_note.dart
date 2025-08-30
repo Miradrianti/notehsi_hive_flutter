@@ -1,5 +1,4 @@
 import 'package:aplikasi_catatan/components/bottom_bar.dart';
-import 'package:aplikasi_catatan/components/tag_input_field.dart';
 import 'package:aplikasi_catatan/components/top_bar.dart';
 import 'package:aplikasi_catatan/model/note_model.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,6 @@ class _WriteNoteState extends State<WriteNote> {
   
   late TextEditingController titleController;
   late TextEditingController contentController;
-  late TextEditingController usernameController;
 
   final bool _isBottomSheetOpen = false;
 
@@ -33,16 +31,16 @@ class _WriteNoteState extends State<WriteNote> {
     super.initState();
     titleController = TextEditingController(text: widget.note?.title ?? "");
     contentController = TextEditingController(text: widget.note?.content ?? "");
-    usernameController = TextEditingController(text: widget.note?.username ?? "");
   }
 
   @override
   void dispose() {
     titleController.dispose();
     contentController.dispose();
-    usernameController.dispose();
+
     super.dispose();
   }
+
   
   @override
   Widget build(BuildContext context) {
@@ -77,17 +75,16 @@ class _WriteNoteState extends State<WriteNote> {
               ),
             ),
             if (_isBottomSheetOpen) Divider(),
-            TagInputField(
-              initialTags: widget.note?.tags ?? [],
-              enabled: widget.ulid == null,
-            ),
+            // TagInputField(
+            //   initialTags: widget.note?.tags ?? [],
+            //   enabled: widget.ulid == null,
+            // ),
           ],
         ),
       ),
       bottomNavigationBar: MyBottomBar(
         titleController: titleController, 
-        contentController: contentController, 
-        usernameController: usernameController
+        contentController: contentController,
       )
     );
   }

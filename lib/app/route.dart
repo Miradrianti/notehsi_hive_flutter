@@ -1,7 +1,7 @@
 import 'package:aplikasi_catatan/view/home.dart';
 import 'package:aplikasi_catatan/view/login.dart';
 import 'package:aplikasi_catatan/view/register.dart';
-import 'package:aplikasi_catatan/view/write_note.dart';
+import 'package:aplikasi_catatan/view/note/write_note.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

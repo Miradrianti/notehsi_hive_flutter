@@ -1,52 +1,67 @@
-
+import 'package:aplikasi_catatan/enum/status_enum.dart';
+import 'package:aplikasi_catatan/service/note/note_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../model/note_model.dart';
-import '../../service/note/local_service.dart';
 
 part 'note_event.dart';
 part 'note_state.dart';
 
+
 class NoteBloc extends Bloc<NoteEvent, NoteState> {
-  NoteBloc() : super(NoteInitial()) {
-    on<LoadNotes>((event, emit) async {
-      emit(NoteLoading());
+  NoteBloc(this.service) : super(NoteState.initial()) {
+    on<NoteEvent>((event, emit) async {
+      final notes = await service.notes();
+
+      emit(state.copyWith(notes: notes, status: StatusEnum.initial));
+    });
+
+    on<CreateNoteEvent>((event, emit) async {
       try {
-        final notes = await NoteLocalService.getNotes();
-        emit(NoteLoaded(notes));
-      } catch (e) {
-        emit(NoteError(e.toString()));
+        emit(state.copyWith(status: StatusEnum.loading));
+
+        await service.create(content: event.content, title: event.title);
+
+        emit(state.copyWith(status: StatusEnum.success));
+
+        add(GetNoteEvent());
+      } on Exception catch (e) {
+        emit(state.copyWith(status: StatusEnum.failure, error: e));
       }
     });
 
-    on<AddNote>((event, emit) async {
-      await NoteLocalService.addNote(
-        username: event.username,
-        title: event.title,
-        content: event.content,
-        tags: event.tags,
-      );
-      final notes = await NoteLocalService.getNotes();
-      emit(NoteLoaded(notes));
+    on<UpdateNoteEvent>((event, emit) async {
+      try {
+        emit(state.copyWith(status: StatusEnum.loading));
+
+        await service.update(
+          id: event.id,
+          content: event.content,
+          title: event.title,
+        );
+
+        emit(state.copyWith(status: StatusEnum.success));
+
+        add(GetNoteEvent());
+      } on Exception catch (e) {
+        emit(state.copyWith(status: StatusEnum.failure, error: e));
+      }
     });
 
-    on<UpdateNote>((event, emit) async {
-      await NoteLocalService.updateNote(event.note);
-      final notes = await NoteLocalService.getNotes();
-      emit(NoteLoaded(notes));
-    });
+    on<DeleteNoteEvent>((event, emit) async {
+      try {
+        emit(state.copyWith(status: StatusEnum.loading));
 
-    on<DeleteNote>((event, emit) async {
-      await NoteLocalService.deleteNote(event.id);
-      final notes = await NoteLocalService.getNotes();
-      emit(NoteLoaded(notes));
-    });
+        await service.delete(event.id);
 
-    on<SaveNotes>((event, emit) async {
-      await NoteLocalService.saveAll();
-      final notes = await NoteLocalService.getNotes();
-      emit(NoteLoaded(notes));
+        emit(state.copyWith(status: StatusEnum.success));
+
+        add(GetNoteEvent());
+      } on Exception catch (e) {
+        emit(state.copyWith(status: StatusEnum.failure, error: e));
+      }
     });
-    
   }
+
+  final NoteService service;
 }

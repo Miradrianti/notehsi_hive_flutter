@@ -1,68 +1,96 @@
 import 'dart:convert';
 
+import 'package:aplikasi_catatan/exception/cache_exception.dart';
 import 'package:aplikasi_catatan/model/note_model.dart';
+import 'package:aplikasi_catatan/service/note/note_service.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:ulid/ulid.dart';
 
-class NoteLocalService {
-  NoteLocalService._();
+class NoteLocalServiceImpl implements NoteService {
+  Future<Box> get _box async {
 
-  static Future<Box> get _box async {
-    await Hive.initFlutter(); 
-    return await Hive.openBox<String>('note');
-  }
-  
-  static Future<List<NoteModel>> getNotes() async {
-    final box = await _box;
-    return box.values
-        .map((e) => NoteModel.fromJson(jsonDecode(e)))
-        .toList();
+    await Hive.initFlutter();
+
+    return await Hive.openBox('note');
   }
 
-  static Future<NoteModel> addNote({
-    required String username,
+  @override
+  Future<List<NoteModel>> notes() async {
+    try {
+      final box = await _box;
+
+      final values = box.values.toList();
+
+      return values.map((e) {
+        return NoteModel.fromJson(jsonDecode(e));
+      }).toList();
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> create({required String title, required String content}) async {
+    try {
+      final box = await _box;
+
+      final ulid = Ulid().toString();
+
+      final date = DateTime.now();
+
+      final data = NoteModel(
+        id: ulid,
+        title: title,
+        content: content,
+        createdAt: date,
+        updatedAt: date,
+      );
+
+      await box.put(ulid, jsonEncode(data.toJson()));
+
+      return true;
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> update({
+    required String id,
     required String title,
     required String content,
-    required List<String> tags,
   }) async {
-    final ulid = Ulid().toString();
+    try {
+      final box = await _box;
 
-    final note = NoteModel.addNote(
-      username: username, 
-      title: title, 
-      content: content, 
-      createdTime: DateTime.now(),
-      tags: tags,
-    );
+      final old = await box.get(id);
 
-    final box = await _box;
-    await box.put(ulid, jsonEncode(note.toJson()));
-    return note;
+      if (old != null && old is String) {
+        final data = NoteModel.fromJson(jsonDecode(old));
+
+        final latest = data.update(title: title, content: content).toJson();
+
+        await box.put(id, jsonEncode(latest));
+
+        return true;
+      }
+
+      throw CacheException('No record data found.');
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
   }
 
-  static Future<NoteModel?> updateNote(NoteModel note) async {
-  final box = await _box;
-  final oldRaw = box.get(note.id);
-  if (oldRaw == null) return null;
+  @override
+  Future<bool> delete(String id) async {
+    try {
+      final box = await _box;
 
-  final oldNote = NoteModel.fromJson(jsonDecode(oldRaw));
-  final updated = oldNote.copyWith(
-    title: note.title,
-    content: note.content,
-    tags: note.tags,
-  );
+      await box.delete(id);
 
-  await box.put(note.id, jsonEncode(updated.toJson()));
-  return updated;
-}
-
-  static Future<void> deleteNote(String id) async {
-    final box = await _box;
-    await box.delete(id);
-  }
-
-  static Future<void> saveAll() async {
-    final box = await _box;
-    await box.flush();
+      return true;
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
   }
 }

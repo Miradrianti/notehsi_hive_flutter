@@ -1,27 +1,30 @@
 part of 'note_bloc.dart';
 
+sealed class NoteEvent {}
 
-abstract class NoteEvent {}
+class GetNoteEvent extends NoteEvent {}
 
-class LoadNotes extends NoteEvent {}
-
-class AddNote extends NoteEvent {
-  final String id;
-  final String username;
+class CreateNoteEvent extends NoteEvent {
   final String title;
   final String content;
-  final List<String> tags;
-  AddNote(this.id, this.username, this.title, this.content, this.tags);
+
+  CreateNoteEvent({required this.title, required this.content});
 }
-class UpdateNote extends NoteEvent {
-  final NoteModel note;
-  UpdateNote(this.note);
-}
-class DeleteNote extends NoteEvent {
+
+class UpdateNoteEvent extends NoteEvent {
   final String id;
-  DeleteNote(this.id);
+  final String title;
+  final String content;
+
+  UpdateNoteEvent({
+    required this.id,
+    required this.title,
+    required this.content,
+  });
 }
-class SaveNotes extends NoteEvent {
-  final List<NoteModel> notes;
-  SaveNotes(this.notes);
+
+class DeleteNoteEvent extends NoteEvent {
+  final String id;
+
+  DeleteNoteEvent(this.id);
 }

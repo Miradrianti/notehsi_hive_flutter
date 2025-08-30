@@ -88,6 +88,7 @@ class _RegularTextfieldState extends State<RegularTextfield> {
       controller: widget.controller,
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
+      validator: widget.validator,
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: TextStyle(
