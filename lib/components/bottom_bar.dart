@@ -111,8 +111,8 @@ class _MyBottomBarState extends State<MyBottomBar> {
                                         ));
                                       } else {
                                         context.read<NoteBloc>().add(CreateNoteEvent(
-                                          title: widget.note!.title, 
-                                          content: widget.note!.content,
+                                          title: widget.titleController.text, 
+                                          content: widget.contentController.text,
                                         ));
                                       }
                                       if (mounted) {

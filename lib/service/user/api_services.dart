@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:convert' as convert;
 
 import 'package:aplikasi_catatan/exception/server_exception.dart';
 import 'package:aplikasi_catatan/model/user_model.dart';
@@ -19,13 +20,14 @@ class UserApiServiceImpl implements UserService{
       );
       final response = await http.post(
         url,
-        body: {'email': email, 'password': password}
+        body: {'email': email, 'password': password},
+        headers: {'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
-        final token = data['access_token'];
+        final token = data['token'];
 
         final box = Hive.box('authentication');
         await box.put('token', token);
@@ -44,11 +46,36 @@ class UserApiServiceImpl implements UserService{
   Future<bool> logout() async {
     try {
       final box = Hive.box('authentication');
+      final token = box.get('token');
 
-      await box.delete('authentication');
+      if (token == null) {
+        print('Logged Out!');
+        return true;
+      }
 
-    return true;
+      final url = Uri.https('hsinote.donisaputra.com', 'api/logout');
+      
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json', 
+        },
+      );
 
+      print("Status: ${response.statusCode}");
+      print("Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final box = Hive.box('authentication');
+        await box.delete('token');
+        final message = convert.jsonDecode(response.body) as Map<String, dynamic>;
+        print(message);
+
+        return true;
+      } else {
+        throw ServerException(response.body);
+      }
     } catch (e) {
     throw ServerException(e.toString());
     }
@@ -110,18 +137,16 @@ class UserApiServiceImpl implements UserService{
       final box = Hive.box('authentication');
       final token = box.get('token');
 
-  if (token == null) throw Exception('Belum login / token tidak ada');
-      final url = Uri.https(
-        'hsinote.donisaputra.com',
-        'api/user'
-      );
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      if (token == null) throw Exception('Belum login / token tidak ada');
+        final url = Uri.https('hsinote.donisaputra.com', 'api/user');
+        
+        final response = await http.get(
+          url,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
 
       if (response.statusCode == 200) {
         return UserModel.fromJson(jsonDecode(response.body)['data']['user']);

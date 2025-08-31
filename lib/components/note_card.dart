@@ -37,17 +37,17 @@ class NotesCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          subtitle: Flexible(
+          subtitle: GestureDetector(
+            onTap: onTap,
             child: Text(
-              softWrap: true,
-              maxLines: 7,
-              note.content,
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
-            ),
+                softWrap: true,
+                maxLines: 7,
+                note.content,
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+              ),
           ),
-          onTap: onTap,
+          ),
         ),
-      ),
     );
   }
 }

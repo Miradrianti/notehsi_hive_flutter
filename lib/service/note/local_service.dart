@@ -30,7 +30,7 @@ class NoteLocalServiceImpl implements NoteService {
   }
 
   @override
-  Future<bool> create({required String title, required String content}) async {
+  Future<NoteModel> create({required String title, required String content}) async {
     try {
       final box = await _box;
 
@@ -47,8 +47,9 @@ class NoteLocalServiceImpl implements NoteService {
       );
 
       await box.put(ulid, jsonEncode(data.toJson()));
+      
+      return data;
 
-      return true;
     } catch (e) {
       throw CacheException(e.toString());
     }
